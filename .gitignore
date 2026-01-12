@@ -73,6 +73,9 @@ mono_crash.*
 *.unitypackage.meta
 *.app
 
+# In-game Songs folder
+[Aa]ssets/Songs/
+
 # Crashlytics generated file
 crashlytics-build.properties
 

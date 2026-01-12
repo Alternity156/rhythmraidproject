@@ -13,10 +13,15 @@ public class MainEditor : MonoBehaviour
     [SerializeField] private GameObject editorMenuCanvas;
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject newProjectCanvas;
+    [SerializeField] private GameObject newProjectScroll;
+    [SerializeField] private GameObject newProjectFormCanvas;
     [SerializeField] private Button exitButton;
     [SerializeField] private Button backButton;
     [SerializeField] private Button newButton;
     [SerializeField] private Button cancelButton;
+    [SerializeField] private TMP_InputField audioFileInput;
+    [SerializeField] private TMP_InputField songNameInput;
+    [SerializeField] private TMP_InputField artistNameInput;
 
     [SerializeField] private Button buttonPrefab;
     [SerializeField] private Transform contentParent;
@@ -41,6 +46,11 @@ public class MainEditor : MonoBehaviour
 
     void OnButtonClick(string filePath)
     {
+        newProjectScroll.SetActive(false);
+        newProjectFormCanvas.SetActive(true);
+
+        audioFileInput.text = filePath;
+
         Debug.Log($"Opening {filePath}");
     }
 
@@ -81,8 +91,9 @@ public class MainEditor : MonoBehaviour
 
     private void New()
     {
-
         newProjectCanvas.SetActive(true);
+        newProjectScroll.SetActive(true);
+        newProjectFormCanvas.SetActive(false);
         editorMenuCanvas.SetActive(false);
         GenerateButtons(Utilities.I.GetFilePathsInFolder(GameManager.I.songsPath));
     }

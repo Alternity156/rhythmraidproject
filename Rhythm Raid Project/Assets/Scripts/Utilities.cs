@@ -5,6 +5,11 @@ public class Utilities : MonoBehaviour
 {
     public static Utilities I { get; private set; }
 
+    private void Awake()
+    {
+        I = this;
+    }
+
     public string[] GetFilePathsInFolder(string folderPath)
     {
         Debug.Log($"Retrieving file paths from {folderPath}...");
@@ -21,9 +26,12 @@ public class Utilities : MonoBehaviour
         }
     }
 
-    private void Awake()
+    public class Level
     {
-        I = this;
+        public string folderPath;
+        public string audioFilePath;
+        public string songName;
+        public string artistName;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

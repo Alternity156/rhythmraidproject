@@ -5,6 +5,9 @@ using UnityEngine.UI;
 public class MainMenu : MonoBehaviour
 {
     [SerializeField] private Button quitButton;
+    [SerializeField] private Button editorButton;
+    [SerializeField] private GameObject editor;
+    [SerializeField] private GameObject mainMenu;
 
     void QuitGame()
     {
@@ -17,10 +20,19 @@ public class MainMenu : MonoBehaviour
         #endif
     }
 
+    void OpenEditor()
+    {
+        Debug.Log("Opening editor...");
+
+        mainMenu.SetActive(false);
+        editor.SetActive(true);
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         quitButton.onClick.AddListener(QuitGame);
+        editorButton.onClick.AddListener(OpenEditor);
     }
 
     // Update is called once per frame

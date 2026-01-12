@@ -74,7 +74,7 @@ mono_crash.*
 *.app
 
 # In-game Songs folder
-[Aa]ssets/Songs/
+"Rhythm Raid Project/Assets/Songs/"
 
 # Crashlytics generated file
 crashlytics-build.properties

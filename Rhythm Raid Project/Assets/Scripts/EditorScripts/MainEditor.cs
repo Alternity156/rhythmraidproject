@@ -16,22 +16,26 @@ public class MainEditor : MonoBehaviour
     [SerializeField] private Button exitButton;
     [SerializeField] private Button backButton;
     [SerializeField] private Button newButton;
+    [SerializeField] private Button cancelButton;
 
     [SerializeField] private Button buttonPrefab;
     [SerializeField] private Transform contentParent;
 
-    private List<Button> buttons;
+    private List<Button> buttons = new List<Button>();
 
     void GenerateButtons(string[] filePaths)
     {
         foreach (string filePath in filePaths)
         {
-            Button newButton = Instantiate(buttonPrefab, contentParent);
-            string fileName = Path.GetFileName(filePath);
-            TextMeshProUGUI buttonText = newButton.GetComponentInChildren<TextMeshProUGUI>();
-            buttonText.text = fileName;
-            newButton.onClick.AddListener(() => OnButtonClick(filePath));
-            buttons.Add(newButton);
+            if (filePath.EndsWith(".ogg"))
+            {
+                Button newButton = Instantiate(buttonPrefab, contentParent);
+                string fileName = Path.GetFileName(filePath);
+                TextMeshProUGUI buttonText = newButton.GetComponentInChildren<TextMeshProUGUI>();
+                buttonText.text = fileName;
+                newButton.onClick.AddListener(() => OnButtonClick(filePath));
+                buttons.Add(newButton);
+            }
         }
     }
 
@@ -44,10 +48,13 @@ public class MainEditor : MonoBehaviour
     {
         foreach (Button button in buttons)
         {
-            Destroy(button);
+            Destroy(button.gameObject);
         }
 
         buttons.Clear();
+
+        newProjectCanvas.SetActive(false);
+        editorCanvas.SetActive(true);
     }
 
     void OpenMenu()
@@ -87,6 +94,7 @@ public class MainEditor : MonoBehaviour
         exitButton.onClick.AddListener(Exit);
         backButton.onClick.AddListener(Back);
         newButton.onClick.AddListener(New);
+        cancelButton.onClick.AddListener(CancelNew);
     }
 
     // Update is called once per frame

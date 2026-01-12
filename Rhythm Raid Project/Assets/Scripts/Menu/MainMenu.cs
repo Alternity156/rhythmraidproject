@@ -8,6 +8,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private Button editorButton;
     [SerializeField] private GameObject editor;
     [SerializeField] private GameObject mainMenu;
+    [SerializeField] private GameObject editorCanvas;
 
     void QuitGame()
     {
@@ -26,6 +27,7 @@ public class MainMenu : MonoBehaviour
 
         mainMenu.SetActive(false);
         editor.SetActive(true);
+        editorCanvas.SetActive(true);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

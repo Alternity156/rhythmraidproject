@@ -3,13 +3,16 @@ using System.IO;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager I;
+    public static GameManager I { get; private set; }
 
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject editor;
     [SerializeField] private GameObject editorMenu;
+    [SerializeField] private GameObject editorMenuCanvas;
+    [SerializeField] private GameObject newProjectCanvas;
 
-    static string songsFolder = "Songs";
+    public static string songsFolder = "Songs";
+    public string songsPath = Path.Combine(Application.dataPath, songsFolder);
 
     void StartState()
     {
@@ -17,12 +20,12 @@ public class GameManager : MonoBehaviour
         mainMenu.SetActive(true);
         editor.SetActive(false);
         editorMenu.SetActive(false);
+        editorMenuCanvas.SetActive(false);
+        newProjectCanvas.SetActive(false);
     }
 
     void FolderSetup()
     {
-        string songsPath = Path.Combine(Application.dataPath, songsFolder);
-
         if (!Directory.Exists(songsPath))
         {
             Directory.CreateDirectory(songsPath);

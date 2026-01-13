@@ -87,7 +87,7 @@ public class Utilities : MonoBehaviour
 
     public Level SaveLevelData(Level level)
     {
-        string jsonString = JsonConvert.SerializeObject(level);
+        string jsonString = JsonConvert.SerializeObject(level, Formatting.Indented);
         File.WriteAllText(Path.Combine(level.folderPath, GameManager.I.dataFileName), jsonString);
 
         return level;

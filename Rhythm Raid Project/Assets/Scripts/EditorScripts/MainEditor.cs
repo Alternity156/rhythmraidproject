@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class MainEditor : MonoBehaviour
 {
+    public static MainEditor I { get; private set; }
+
     [SerializeField] private Button menuButton;
     [SerializeField] private GameObject editor;
     [SerializeField] private GameObject editorCanvas;
@@ -31,11 +33,17 @@ public class MainEditor : MonoBehaviour
     [SerializeField] private Button pauseButton;
     [SerializeField] private Button playButton;
     [SerializeField] private Slider volumeSlider;
+    [SerializeField] public Slider positionSlider;
 
     [SerializeField] private Button buttonPrefab;
     [SerializeField] private Transform contentParent;
 
     private List<Button> buttons = new List<Button>();
+
+    private void Awake()
+    {
+        I = this;
+    }
 
     Button SetupButtonPrefab(string text)
     {
@@ -184,6 +192,11 @@ public class MainEditor : MonoBehaviour
         AudioManager.I.SetVolume(volume);
     }
 
+    private void SetAudioPosition(float position)
+    {
+        AudioManager.I.Seek(position);
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -199,11 +212,15 @@ public class MainEditor : MonoBehaviour
         stopButton.onClick.AddListener(Stop);
 
         volumeSlider.onValueChanged.AddListener(delegate { SetVolume(volumeSlider.value); } );
+        positionSlider.onValueChanged.AddListener(delegate { SetAudioPosition(positionSlider.value); } );
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if(AudioManager.I.audioLoaded)
+        {
+            positionSlider.value = AudioManager.I.GetPosition();
+        }
     }
 }

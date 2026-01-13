@@ -9,6 +9,8 @@ public class AudioManager : MonoBehaviour
 
     [SerializeField] private AudioSource audioSource;
 
+    public bool audioLoaded = false;
+
     private void Awake()
     {
         I = this;
@@ -38,6 +40,13 @@ public class AudioManager : MonoBehaviour
                     }
 
                     audioSource.clip = clip;
+                    audioLoaded = true;
+
+                    if (GameManager.I.gameState == GameManager.GameState.Editor)
+                    {
+                        MainEditor.I.positionSlider.maxValue = GetLength();
+                    }
+
                     Debug.Log($"Audio {filePath} loaded");
                 }
             }
@@ -74,6 +83,15 @@ public class AudioManager : MonoBehaviour
         audioSource.time = time;
     }
 
+    public float GetLength()
+    {
+        return audioSource.clip.length;
+    }
+
+    public float GetPosition()
+    {
+        return audioSource.time;
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

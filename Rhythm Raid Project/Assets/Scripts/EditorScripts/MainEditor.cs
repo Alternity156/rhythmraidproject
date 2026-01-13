@@ -38,11 +38,67 @@ public class MainEditor : MonoBehaviour
     [SerializeField] private Button buttonPrefab;
     [SerializeField] private Transform contentParent;
 
+    [SerializeField] private Image waveformImage;
+
     private List<Button> buttons = new List<Button>();
+
+    [SerializeField] private Color waveformColor = Color.green;
+    [SerializeField] private Color waveformBackgroundColor = Color.black;
+
+    private int waveformWidth = 16384;
+    private int waveformHeight = 100;
+    private float waveformSaturation = 0.5f;
+    private float waveformCurrentPosX = 0;
 
     private void Awake()
     {
         I = this;
+    }
+
+    public void ApplyWaveFormTexture()
+    {
+        Texture2D texture = PaintWaveformSpectrum(AudioManager.I.audioSource.clip, waveformSaturation, waveformWidth, waveformHeight, waveformColor, waveformBackgroundColor);
+        waveformImage.rectTransform.sizeDelta = new Vector2(waveformWidth, waveformHeight);
+        waveformImage.overrideSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+    }
+
+    Texture2D PaintWaveformSpectrum(AudioClip audio, float saturation, int width, int height, Color wfColor, Color backgroundColor)
+    {
+        audio = AudioManager.I.ConvertAudioClipToMono(audio, "mono");
+
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        float[] samples = new float[audio.samples];
+        float[] waveform = new float[width];
+        audio.GetData(samples, 0);
+        int packSize = (audio.samples / width) + 1;
+        int s = 0;
+
+        for (int i = 0; i < audio.samples; i += packSize)
+        {
+            waveform[s] = Mathf.Abs(samples[i]);
+            s++;
+        }
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tex.SetPixel(x, y, backgroundColor);
+            }
+        }
+
+        for (int x = 0; x < waveform.Length; x++)
+        {
+            for (int y = 0; y <= waveform[x] * ((float)height * 0.75f); y++)
+            {
+                tex.SetPixel(x, (height / 2) + y, wfColor);
+                tex.SetPixel(x, (height / 2) - y, wfColor);
+            }
+        }
+
+        tex.Apply();
+
+        return tex;
     }
 
     Button SetupButtonPrefab(string text)

@@ -1,19 +1,37 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager I { get; private set; }
 
-    [SerializeField] private AudioSource audioSource;
+    [SerializeField] public AudioSource audioSource;
 
     public bool audioLoaded = false;
 
     private void Awake()
     {
         I = this;
+    }
+
+    public AudioClip ConvertAudioClipToMono(AudioClip audioClip, string name)
+    {
+        AudioClip newAudioClip = AudioClip.Create(name, audioClip.samples, audioClip.channels, audioClip.frequency, false);
+        float[] copyData = new float[audioClip.samples * audioClip.channels];
+        audioClip.GetData(copyData, 0);
+
+        List<float> monoData = new List<float>();
+
+        for (int i = 0; i < copyData.Length; i += 2)
+        {
+            monoData.Add(copyData[i]);
+        }
+        newAudioClip.SetData(monoData.ToArray(), 0);
+
+        return newAudioClip;
     }
 
     IEnumerator LoadAudioClip(string filePath)
@@ -45,6 +63,7 @@ public class AudioManager : MonoBehaviour
                     if (GameManager.I.gameState == GameManager.GameState.Editor)
                     {
                         MainEditor.I.positionSlider.maxValue = GetLength();
+                        MainEditor.I.ApplyWaveFormTexture();
                     }
 
                     Debug.Log($"Audio {filePath} loaded");

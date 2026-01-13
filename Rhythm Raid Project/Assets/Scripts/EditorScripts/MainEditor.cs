@@ -27,6 +27,10 @@ public class MainEditor : MonoBehaviour
     [SerializeField] private TMP_InputField artistNameInput;
     [SerializeField] private TextMeshProUGUI infoSongLabel;
     [SerializeField] private TextMeshProUGUI infoArtistLabel;
+    [SerializeField] private Button stopButton;
+    [SerializeField] private Button pauseButton;
+    [SerializeField] private Button playButton;
+    [SerializeField] private Slider volumeSlider;
 
     [SerializeField] private Button buttonPrefab;
     [SerializeField] private Transform contentParent;
@@ -79,13 +83,15 @@ public class MainEditor : MonoBehaviour
     {
         newProjectScroll.SetActive(false);
         editorCanvas.SetActive(true);
+        ClearButtons();
 
         GameManager.I.level = Utilities.I.LoadLevelData(folderPath);
+        AudioManager.I.LoadAudio(Path.Combine(folderPath, GameManager.I.level.audioFile));
+
+        AudioManager.I.SetVolume(volumeSlider.value);
 
         infoSongLabel.text = $"Song: {GameManager.I.level.songName}";
         infoArtistLabel.text = $"Artist: {GameManager.I.level.artistName}";
-
-        ClearButtons();
     }
 
     private void Confirm()
@@ -158,6 +164,26 @@ public class MainEditor : MonoBehaviour
         GenerateButtonsLoad(Utilities.I.GetFoldersInLevels());
     }
 
+    private void Play()
+    {
+        AudioManager.I.Play();
+    }
+
+    private void Pause()
+    {
+        AudioManager.I.Pause();
+    }
+
+    private void Stop()
+    {
+       AudioManager.I.Stop();
+    }
+
+    private void SetVolume(float volume)
+    {
+        AudioManager.I.SetVolume(volume);
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -168,6 +194,11 @@ public class MainEditor : MonoBehaviour
         cancelButton.onClick.AddListener(CancelNew);
         confirmButton.onClick.AddListener(Confirm);
         loadButton.onClick.AddListener(Load);
+        playButton.onClick.AddListener(Play);
+        pauseButton.onClick.AddListener(Pause);
+        stopButton.onClick.AddListener(Stop);
+
+        volumeSlider.onValueChanged.AddListener(delegate { SetVolume(volumeSlider.value); } );
     }
 
     // Update is called once per frame

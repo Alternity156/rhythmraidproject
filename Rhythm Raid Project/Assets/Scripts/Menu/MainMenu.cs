@@ -28,6 +28,8 @@ public class MainMenu : MonoBehaviour
         mainMenu.SetActive(false);
         editor.SetActive(true);
         editorCanvas.SetActive(true);
+
+        GameManager.I.gameState = GameManager.GameState.Editor;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

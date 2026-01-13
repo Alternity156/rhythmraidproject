@@ -101,3 +101,5 @@ ServerData
 # Auto-generated scenes by play mode tests
 [Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 /Rhythm Raid Project/Assets/Songs
+/Rhythm Raid Project/Assets/Levels
+Rhythm Raid Project/Assets/Levels.meta

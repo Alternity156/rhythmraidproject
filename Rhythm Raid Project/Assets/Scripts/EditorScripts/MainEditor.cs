@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,33 +19,53 @@ public class MainEditor : MonoBehaviour
     [SerializeField] private Button exitButton;
     [SerializeField] private Button backButton;
     [SerializeField] private Button newButton;
+    [SerializeField] private Button loadButton;
     [SerializeField] private Button cancelButton;
+    [SerializeField] private Button confirmButton;
     [SerializeField] private TMP_InputField audioFileInput;
     [SerializeField] private TMP_InputField songNameInput;
     [SerializeField] private TMP_InputField artistNameInput;
+    [SerializeField] private TextMeshProUGUI infoSongLabel;
+    [SerializeField] private TextMeshProUGUI infoArtistLabel;
 
     [SerializeField] private Button buttonPrefab;
     [SerializeField] private Transform contentParent;
 
     private List<Button> buttons = new List<Button>();
 
-    void GenerateButtons(string[] filePaths)
+    Button SetupButtonPrefab(string text)
+    {
+        Button newButton = Instantiate(buttonPrefab, contentParent);
+        TextMeshProUGUI buttonText = newButton.GetComponentInChildren<TextMeshProUGUI>();
+        buttonText.text = text;
+
+        return newButton;
+    }
+
+    void GenerateButtonsNew(string[] filePaths)
     {
         foreach (string filePath in filePaths)
         {
             if (filePath.EndsWith(".ogg"))
             {
-                Button newButton = Instantiate(buttonPrefab, contentParent);
-                string fileName = Path.GetFileName(filePath);
-                TextMeshProUGUI buttonText = newButton.GetComponentInChildren<TextMeshProUGUI>();
-                buttonText.text = fileName;
-                newButton.onClick.AddListener(() => OnButtonClick(filePath));
+                Button newButton = SetupButtonPrefab(Path.GetFileName(filePath));
+                newButton.onClick.AddListener(() => OnNewButtonClick(filePath));
                 buttons.Add(newButton);
             }
         }
     }
 
-    void OnButtonClick(string filePath)
+    void GenerateButtonsLoad(string[] folderPaths)
+    {
+        foreach (string folderPath in folderPaths)
+        {
+            Button newButton = SetupButtonPrefab(folderPath.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).Last());
+            newButton.onClick.AddListener(() => OnLoadButtonClick(folderPath));
+            buttons.Add(newButton);
+        }
+    }
+
+    void OnNewButtonClick(string filePath)
     {
         newProjectScroll.SetActive(false);
         newProjectFormCanvas.SetActive(true);
@@ -54,7 +75,30 @@ public class MainEditor : MonoBehaviour
         Debug.Log($"Opening {filePath}");
     }
 
-    private void CancelNew()
+    void OnLoadButtonClick(string folderPath)
+    {
+        newProjectScroll.SetActive(false);
+        editorCanvas.SetActive(true);
+
+        GameManager.I.level = Utilities.I.LoadLevelData(folderPath);
+
+        infoSongLabel.text = $"Song: {GameManager.I.level.songName}";
+        infoArtistLabel.text = $"Artist: {GameManager.I.level.artistName}";
+
+        ClearButtons();
+    }
+
+    private void Confirm()
+    {
+        Utilities.Level level = Utilities.I.CreateLevel(songNameInput.text, artistNameInput.text, audioFileInput.text);
+        Utilities.I.SaveLevelData(level);
+
+        newProjectFormCanvas.SetActive(false);
+
+        OnLoadButtonClick(level.folderPath);
+    }
+
+    private void ClearButtons()
     {
         foreach (Button button in buttons)
         {
@@ -62,6 +106,11 @@ public class MainEditor : MonoBehaviour
         }
 
         buttons.Clear();
+    }
+
+    private void CancelNew()
+    {
+        ClearButtons();
 
         newProjectCanvas.SetActive(false);
         editorCanvas.SetActive(true);
@@ -81,6 +130,8 @@ public class MainEditor : MonoBehaviour
         editorMenu.SetActive(false);
         editor.SetActive(false);
         mainMenu.SetActive(true);
+
+        GameManager.I.gameState = GameManager.GameState.MainMenu;
     }
 
     private void Back()
@@ -95,7 +146,16 @@ public class MainEditor : MonoBehaviour
         newProjectScroll.SetActive(true);
         newProjectFormCanvas.SetActive(false);
         editorMenuCanvas.SetActive(false);
-        GenerateButtons(Utilities.I.GetFilePathsInFolder(GameManager.I.songsPath));
+        GenerateButtonsNew(Utilities.I.GetFilePathsInFolder(GameManager.I.songsPath));
+    }
+
+    private void Load()
+    {
+        newProjectCanvas.SetActive(true);
+        newProjectScroll.SetActive(true);
+        newProjectFormCanvas.SetActive(false);
+        editorMenuCanvas.SetActive(false);
+        GenerateButtonsLoad(Utilities.I.GetFoldersInLevels());
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -106,6 +166,8 @@ public class MainEditor : MonoBehaviour
         backButton.onClick.AddListener(Back);
         newButton.onClick.AddListener(New);
         cancelButton.onClick.AddListener(CancelNew);
+        confirmButton.onClick.AddListener(Confirm);
+        loadButton.onClick.AddListener(Load);
     }
 
     // Update is called once per frame

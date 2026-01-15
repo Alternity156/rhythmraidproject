@@ -38,15 +38,16 @@ public class MainEditor : MonoBehaviour
     [SerializeField] private Button buttonPrefab;
     [SerializeField] private Transform contentParent;
 
-    [SerializeField] private Image waveformImage;
-
     private List<Button> buttons = new List<Button>();
 
+    [SerializeField] private Canvas waveformCanvas;
+    [SerializeField] private Image waveformImage;
     [SerializeField] private Color waveformColor = Color.green;
     [SerializeField] private Color waveformBackgroundColor = Color.black;
 
-    private int waveformWidth = 16384;
+    private static int waveformWidth = 16384;
     private int waveformHeight = 100;
+    private float waveformCanvasStartPos = waveformWidth / 2;
     private float waveformSaturation = 0.5f;
     private float waveformCurrentPosX = 0;
 
@@ -57,9 +58,15 @@ public class MainEditor : MonoBehaviour
 
     public void ApplyWaveFormTexture()
     {
+        RectTransform waveformCanvasRectTransform = waveformCanvas.GetComponent<RectTransform>();
+        waveformCanvasRectTransform.sizeDelta = new Vector2(waveformWidth, 140);
+        waveformCanvasRectTransform.localPosition = new Vector3(waveformCanvasStartPos, waveformCanvasRectTransform.localPosition.y, waveformCanvasRectTransform.localPosition.z);
         Texture2D texture = PaintWaveformSpectrum(AudioManager.I.audioSource.clip, waveformSaturation, waveformWidth, waveformHeight, waveformColor, waveformBackgroundColor);
         waveformImage.rectTransform.sizeDelta = new Vector2(waveformWidth, waveformHeight);
         waveformImage.overrideSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+        Debug.Log(waveformImage.rectTransform.position.x);
+        Debug.Log(waveformImage.rectTransform.localPosition.x);
+        waveformImage.rectTransform.localPosition = new Vector3(0, waveformImage.rectTransform.localPosition.y, waveformImage.rectTransform.localPosition.z);
     }
 
     Texture2D PaintWaveformSpectrum(AudioClip audio, float saturation, int width, int height, Color wfColor, Color backgroundColor)

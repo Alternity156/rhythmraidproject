@@ -58,13 +58,14 @@ public class AudioManager : MonoBehaviour
                     }
 
                     audioSource.clip = clip;
-                    audioLoaded = true;
 
                     if (GameManager.I.gameState == GameManager.GameState.Editor)
                     {
                         MainEditor.I.positionSlider.maxValue = GetLength();
                         MainEditor.I.ApplyWaveFormTexture();
                     }
+
+                    audioLoaded = true;
 
                     Debug.Log($"Audio {filePath} loaded");
                 }

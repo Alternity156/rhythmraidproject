@@ -45,28 +45,38 @@ public class MainEditor : MonoBehaviour
     [SerializeField] private Color waveformColor = Color.green;
     [SerializeField] private Color waveformBackgroundColor = Color.black;
 
-    private static int waveformWidth = 16384;
+    private RectTransform waveformCanvasRectTransform;
+
+    public static int waveformWidth = 16384;
     private int waveformHeight = 100;
     private float waveformCanvasStartPos = waveformWidth / 2;
     private float waveformSaturation = 0.5f;
-    private float waveformCurrentPosX = 0;
+    public float waveformPixelsPerSecond;
 
     private void Awake()
     {
         I = this;
     }
 
-    public void ApplyWaveFormTexture()
+    public int GetWaveformWidth()
     {
-        RectTransform waveformCanvasRectTransform = waveformCanvas.GetComponent<RectTransform>();
+        return waveformWidth;
+    }
+
+    public void SetWaveformCanvasPosition()
+    {
         waveformCanvasRectTransform.sizeDelta = new Vector2(waveformWidth, 140);
         waveformCanvasRectTransform.localPosition = new Vector3(waveformCanvasStartPos, waveformCanvasRectTransform.localPosition.y, waveformCanvasRectTransform.localPosition.z);
+        waveformImage.rectTransform.localPosition = new Vector3(0, waveformImage.rectTransform.localPosition.y, waveformImage.rectTransform.localPosition.z);
+    }
+
+    public void ApplyWaveFormTexture()
+    {
         Texture2D texture = PaintWaveformSpectrum(AudioManager.I.audioSource.clip, waveformSaturation, waveformWidth, waveformHeight, waveformColor, waveformBackgroundColor);
         waveformImage.rectTransform.sizeDelta = new Vector2(waveformWidth, waveformHeight);
         waveformImage.overrideSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         Debug.Log(waveformImage.rectTransform.position.x);
         Debug.Log(waveformImage.rectTransform.localPosition.x);
-        waveformImage.rectTransform.localPosition = new Vector3(0, waveformImage.rectTransform.localPosition.y, waveformImage.rectTransform.localPosition.z);
     }
 
     Texture2D PaintWaveformSpectrum(AudioClip audio, float saturation, int width, int height, Color wfColor, Color backgroundColor)
@@ -276,6 +286,8 @@ public class MainEditor : MonoBehaviour
 
         volumeSlider.onValueChanged.AddListener(delegate { SetVolume(volumeSlider.value); } );
         positionSlider.onValueChanged.AddListener(delegate { SetAudioPosition(positionSlider.value); } );
+
+        waveformCanvasRectTransform = waveformCanvas.GetComponent<RectTransform>();
     }
 
     // Update is called once per frame
@@ -284,6 +296,9 @@ public class MainEditor : MonoBehaviour
         if(AudioManager.I.audioLoaded)
         {
             positionSlider.value = AudioManager.I.GetPosition();
+            waveformCanvasRectTransform.localPosition = new Vector3(-(Utilities.I.PixelsPerSeconds(AudioManager.I.GetLength(), waveformWidth) * AudioManager.I.GetPosition()) + waveformCanvasStartPos,
+                                                                    waveformCanvasRectTransform.localPosition.y,
+                                                                    waveformCanvasRectTransform.localPosition.z);
         }
     }
 }

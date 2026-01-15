@@ -63,6 +63,8 @@ public class AudioManager : MonoBehaviour
                     {
                         MainEditor.I.positionSlider.maxValue = GetLength();
                         MainEditor.I.ApplyWaveFormTexture();
+                        MainEditor.I.SetWaveformCanvasPosition();
+                        MainEditor.I.waveformPixelsPerSecond = Utilities.I.PixelsPerSeconds(GetLength(), MainEditor.I.GetWaveformWidth());
                     }
 
                     audioLoaded = true;

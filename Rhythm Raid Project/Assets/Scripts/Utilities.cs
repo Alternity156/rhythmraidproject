@@ -12,6 +12,11 @@ public class Utilities : MonoBehaviour
         I = this;
     }
 
+    public float PixelsPerSeconds(float time, float pixels)
+    {
+        return pixels / time;
+    }
+
     public string[] GetFilePathsInFolder(string folderPath)
     {
         Debug.Log($"Retrieving file paths from {folderPath}...");

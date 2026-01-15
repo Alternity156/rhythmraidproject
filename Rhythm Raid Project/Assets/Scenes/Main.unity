@@ -5287,6 +5287,7 @@ MonoBehaviour:
   waveformImage: {fileID: 1129155686}
   waveformColor: {r: 0, g: 1, b: 0, a: 1}
   waveformBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
+  waveformPixelsPerSecond: 0
 --- !u!1 &1182261766
 GameObject:
   m_ObjectHideFlags: 0

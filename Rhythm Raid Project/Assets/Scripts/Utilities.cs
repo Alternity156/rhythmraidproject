@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 public class Utilities : MonoBehaviour
@@ -70,7 +71,7 @@ public class Utilities : MonoBehaviour
         return levelPath;
     }
 
-    public Level CreateLevel(string songName, string artistName, string audioFilePath)
+    public Level CreateLevel(string songName, string artistName, string audioFilePath, float startingBPM)
     {
         Level level = new Level();
 
@@ -80,12 +81,20 @@ public class Utilities : MonoBehaviour
         string audioFileName = Path.GetFileName(audioFilePath);
         string destinationAudioFilePath = Path.Combine(folderPath, audioFileName);
 
+        TempoMarker tempoMarker = new TempoMarker();
+        tempoMarker.time = 0;
+        tempoMarker.tempo = startingBPM;
+
+        List<TempoMarker> tempoMarkers = new List<TempoMarker>();
+        tempoMarkers.Add(tempoMarker);
+
         File.Copy(audioFilePath, destinationAudioFilePath);
 
         level.artistName = artistName;
         level.songName = songName;
         level.folderPath = folderPath;
         level.audioFile = audioFileName;
+        level.tempoMarkers = tempoMarkers;
 
         return level;
     }
@@ -112,6 +121,13 @@ public class Utilities : MonoBehaviour
         public string audioFile;
         public string songName;
         public string artistName;
+        public List<TempoMarker> tempoMarkers;
+    }
+
+    public class TempoMarker
+    {
+        public float tempo;
+        public float time;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

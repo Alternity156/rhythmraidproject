@@ -27,6 +27,7 @@ public class MainEditor : MonoBehaviour
     [SerializeField] private TMP_InputField audioFileInput;
     [SerializeField] private TMP_InputField songNameInput;
     [SerializeField] private TMP_InputField artistNameInput;
+    [SerializeField] private TMP_InputField startingBPMInput;
     [SerializeField] private TextMeshProUGUI infoSongLabel;
     [SerializeField] private TextMeshProUGUI infoArtistLabel;
     [SerializeField] private Button stopButton;
@@ -177,7 +178,7 @@ public class MainEditor : MonoBehaviour
 
     private void Confirm()
     {
-        Utilities.Level level = Utilities.I.CreateLevel(songNameInput.text, artistNameInput.text, audioFileInput.text);
+        Utilities.Level level = Utilities.I.CreateLevel(songNameInput.text, artistNameInput.text, audioFileInput.text, float.Parse(startingBPMInput.text));
         Utilities.I.SaveLevelData(level);
 
         newProjectFormCanvas.SetActive(false);

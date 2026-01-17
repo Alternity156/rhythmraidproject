@@ -13,6 +13,45 @@ public class Utilities : MonoBehaviour
         I = this;
     }
 
+    public Texture2D PaintWaveformSpectrum(AudioClip audio, float saturation, int width, int height, Color wfColor, Color backgroundColor)
+    {
+        audio = AudioManager.I.ConvertAudioClipToMono(audio, "mono");
+
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        float[] samples = new float[audio.samples];
+        float[] waveform = new float[width];
+        audio.GetData(samples, 0);
+        int packSize = (audio.samples / width) + 1;
+        int s = 0;
+
+        for (int i = 0; i < audio.samples; i += packSize)
+        {
+            waveform[s] = Mathf.Abs(samples[i]);
+            s++;
+        }
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tex.SetPixel(x, y, backgroundColor);
+            }
+        }
+
+        for (int x = 0; x < waveform.Length; x++)
+        {
+            for (int y = 0; y <= waveform[x] * ((float)height * 0.75f); y++)
+            {
+                tex.SetPixel(x, (height / 2) + y, wfColor);
+                tex.SetPixel(x, (height / 2) - y, wfColor);
+            }
+        }
+
+        tex.Apply();
+
+        return tex;
+    }
+
     public float PixelsPerSeconds(float time, float pixels)
     {
         return pixels / time;

@@ -65,6 +65,7 @@ public class AudioManager : MonoBehaviour
                         MainEditor.I.ApplyWaveFormTexture();
                         MainEditor.I.SetWaveformCanvasPosition();
                         MainEditor.I.waveformPixelsPerSecond = Utilities.I.PixelsPerSeconds(GetLength(), MainEditor.I.GetWaveformWidth());
+                        MainEditor.I.ApplyBpmLabels();
                     }
 
                     audioLoaded = true;

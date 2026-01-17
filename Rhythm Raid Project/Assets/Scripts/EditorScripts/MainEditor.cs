@@ -40,9 +40,11 @@ public class MainEditor : MonoBehaviour
     [SerializeField] private Transform contentParent;
 
     private List<Button> buttons = new List<Button>();
+    private List<TextMeshProUGUI> bpmLabels = new List<TextMeshProUGUI>();
 
     [SerializeField] private Canvas waveformCanvas;
     [SerializeField] private Image waveformImage;
+    [SerializeField] private TextMeshProUGUI bpmLabelPrefab;
     [SerializeField] private Color waveformColor = Color.green;
     [SerializeField] private Color waveformBackgroundColor = Color.black;
 
@@ -52,7 +54,7 @@ public class MainEditor : MonoBehaviour
     private int waveformHeight = 100;
     private float waveformCanvasStartPos = waveformWidth / 2;
     private float waveformSaturation = 0.5f;
-    public float waveformPixelsPerSecond;
+    [HideInInspector] public float waveformPixelsPerSecond;
 
     private void Awake()
     {
@@ -73,50 +75,23 @@ public class MainEditor : MonoBehaviour
 
     public void ApplyWaveFormTexture()
     {
-        Texture2D texture = PaintWaveformSpectrum(AudioManager.I.audioSource.clip, waveformSaturation, waveformWidth, waveformHeight, waveformColor, waveformBackgroundColor);
+        Texture2D texture = Utilities.I.PaintWaveformSpectrum(AudioManager.I.audioSource.clip, waveformSaturation, waveformWidth, waveformHeight, waveformColor, waveformBackgroundColor);
         waveformImage.rectTransform.sizeDelta = new Vector2(waveformWidth, waveformHeight);
         waveformImage.overrideSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-        Debug.Log(waveformImage.rectTransform.position.x);
-        Debug.Log(waveformImage.rectTransform.localPosition.x);
     }
 
-    Texture2D PaintWaveformSpectrum(AudioClip audio, float saturation, int width, int height, Color wfColor, Color backgroundColor)
+    public void ApplyBpmLabels()
     {
-        audio = AudioManager.I.ConvertAudioClipToMono(audio, "mono");
-
-        Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
-        float[] samples = new float[audio.samples];
-        float[] waveform = new float[width];
-        audio.GetData(samples, 0);
-        int packSize = (audio.samples / width) + 1;
-        int s = 0;
-
-        for (int i = 0; i < audio.samples; i += packSize)
+        foreach (Utilities.TempoMarker tempoMarker in GameManager.I.level.tempoMarkers)
         {
-            waveform[s] = Mathf.Abs(samples[i]);
-            s++;
+            float labelPositionX = (tempoMarker.time * waveformPixelsPerSecond) - (waveformWidth / 2);
+
+            TextMeshProUGUI bpmLabel = Instantiate(bpmLabelPrefab, waveformCanvas.transform);
+            bpmLabel.text = tempoMarker.tempo.ToString();
+            bpmLabel.rectTransform.localPosition = new Vector3(labelPositionX, bpmLabel.rectTransform.localPosition.y, bpmLabel.rectTransform.localPosition.z);
+
+            bpmLabels.Add(bpmLabel);
         }
-
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                tex.SetPixel(x, y, backgroundColor);
-            }
-        }
-
-        for (int x = 0; x < waveform.Length; x++)
-        {
-            for (int y = 0; y <= waveform[x] * ((float)height * 0.75f); y++)
-            {
-                tex.SetPixel(x, (height / 2) + y, wfColor);
-                tex.SetPixel(x, (height / 2) - y, wfColor);
-            }
-        }
-
-        tex.Apply();
-
-        return tex;
     }
 
     Button SetupButtonPrefab(string text)
@@ -184,6 +159,16 @@ public class MainEditor : MonoBehaviour
         newProjectFormCanvas.SetActive(false);
 
         OnLoadButtonClick(level.folderPath);
+    }
+
+    private void ClearBpmLabels()
+    {
+        foreach (TextMeshProUGUI bpmLabel in bpmLabels)
+        {
+            Destroy(bpmLabel.gameObject);
+        }
+
+        bpmLabels.Clear();
     }
 
     private void ClearButtons()

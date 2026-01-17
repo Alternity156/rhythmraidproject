@@ -282,7 +282,7 @@ public class MainEditor : MonoBehaviour
         if(AudioManager.I.audioLoaded)
         {
             positionSlider.value = AudioManager.I.GetPosition();
-            waveformCanvasRectTransform.localPosition = new Vector3(-(Utilities.I.PixelsPerSeconds(AudioManager.I.GetLength(), waveformWidth) * AudioManager.I.GetPosition()) + waveformCanvasStartPos,
+            waveformCanvasRectTransform.localPosition = new Vector3(-(waveformPixelsPerSecond * AudioManager.I.GetPosition()) + waveformCanvasStartPos,
                                                                     waveformCanvasRectTransform.localPosition.y,
                                                                     waveformCanvasRectTransform.localPosition.z);
         }

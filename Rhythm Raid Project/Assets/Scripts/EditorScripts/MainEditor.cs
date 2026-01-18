@@ -311,6 +311,14 @@ public class MainEditor : MonoBehaviour
     private void SetAudioPosition(float position)
     {
         AudioManager.I.Seek(position);
+        HandleWaveformPosition();
+    }
+
+    private void HandleWaveformPosition()
+    {
+        waveformCanvasRectTransform.localPosition = new Vector3(-(waveformPixelsPerSecond * positionSlider.value) + waveformCanvasStartPos,
+                                                                waveformCanvasRectTransform.localPosition.y,
+                                                                waveformCanvasRectTransform.localPosition.z);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -336,12 +344,10 @@ public class MainEditor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(AudioManager.I.audioLoaded)
+        if(AudioManager.I.audioLoaded && AudioManager.I.IsPlaying())
         {
             positionSlider.value = AudioManager.I.GetPosition();
-            waveformCanvasRectTransform.localPosition = new Vector3(-(waveformPixelsPerSecond * AudioManager.I.GetPosition()) + waveformCanvasStartPos,
-                                                                    waveformCanvasRectTransform.localPosition.y,
-                                                                    waveformCanvasRectTransform.localPosition.z);
+            HandleWaveformPosition();
         }
     }
 }

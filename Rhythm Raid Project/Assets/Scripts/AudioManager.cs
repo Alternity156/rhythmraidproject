@@ -62,6 +62,7 @@ public class AudioManager : MonoBehaviour
                     if (GameManager.I.gameState == GameManager.GameState.Editor)
                     {
                         MainEditor.I.positionSlider.maxValue = GetLength();
+                        MainEditor.I.positionSlider.value = 0;
                         MainEditor.I.ApplyWaveFormTexture();
                         MainEditor.I.SetWaveformCanvasPosition();
                         MainEditor.I.waveformPixelsPerSecond = Utilities.I.PixelsPerSeconds(GetLength(), MainEditor.I.GetWaveformWidth());
@@ -116,6 +117,12 @@ public class AudioManager : MonoBehaviour
     {
         return audioSource.time;
     }
+
+    public bool IsPlaying() 
+    { 
+        return audioSource.isPlaying;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

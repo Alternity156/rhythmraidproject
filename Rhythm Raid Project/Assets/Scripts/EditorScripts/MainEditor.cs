@@ -41,10 +41,12 @@ public class MainEditor : MonoBehaviour
 
     private List<Button> buttons = new List<Button>();
     private List<TextMeshProUGUI> bpmLabels = new List<TextMeshProUGUI>();
+    private List<GameObject> bpmLines = new List<GameObject>();
 
     [SerializeField] private Canvas waveformCanvas;
     [SerializeField] private Image waveformImage;
     [SerializeField] private TextMeshProUGUI bpmLabelPrefab;
+    [SerializeField] private GameObject linePrefab;
     [SerializeField] private Color waveformColor = Color.green;
     [SerializeField] private Color waveformBackgroundColor = Color.black;
 
@@ -64,6 +66,51 @@ public class MainEditor : MonoBehaviour
     public int GetWaveformWidth()
     {
         return waveformWidth;
+    }
+
+    public void PlaceBeatLines()
+    {
+        List<float> beatPixels = new List<float>();
+
+        Utilities.TempoMarker currentBpm = GameManager.I.level.tempoMarkers[0];
+
+        float currentTime = 0f;
+        float bpmTime = Utilities.I.GetBeatTime(currentBpm.tempo);
+        float songLength = AudioManager.I.GetLength();
+        int nextTempoMarkerIndex = 1;
+        int beatIncrements = 4;
+
+        while (currentTime < songLength)
+        {
+            if (GameManager.I.level.tempoMarkers.Count > nextTempoMarkerIndex)
+            {
+                Utilities.TempoMarker nextBpm = GameManager.I.level.tempoMarkers[nextTempoMarkerIndex];
+
+                if (currentTime >= nextBpm.time)
+                {
+                    currentBpm = nextBpm;
+                    bpmTime = Utilities.I.GetBeatTime(currentBpm.tempo);
+                    nextTempoMarkerIndex += 1;
+                }
+            }
+
+            float beatPixel = waveformPixelsPerSecond * currentTime;
+            beatPixels.Add(beatPixel);
+            currentTime += bpmTime * beatIncrements;
+            Debug.Log($"{currentTime} < {songLength}");
+        }
+
+        foreach (float beatPixel in beatPixels)
+        {
+            GameObject line = Instantiate(linePrefab, waveformCanvas.transform);
+            RectTransform lineRectTransform = line.GetComponent<RectTransform>();
+
+            float linePositionX = beatPixel - (waveformWidth / 2);
+
+            lineRectTransform.localPosition = new Vector3(linePositionX, lineRectTransform.localPosition.y, lineRectTransform.localPosition.z);
+
+            bpmLines.Add(line);
+        }
     }
 
     public void SetWaveformCanvasPosition()
@@ -169,6 +216,16 @@ public class MainEditor : MonoBehaviour
         }
 
         bpmLabels.Clear();
+    }
+
+    private void ClearBpmLines()
+    {
+        foreach (GameObject bpmLine in bpmLines)
+        {
+            Destroy(bpmLine.gameObject);
+        }
+
+        bpmLines.Clear();
     }
 
     private void ClearButtons()

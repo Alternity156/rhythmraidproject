@@ -6046,6 +6046,7 @@ MonoBehaviour:
   waveformCanvas: {fileID: 1988512200}
   waveformImage: {fileID: 1129155686}
   bpmLabelPrefab: {fileID: 6437264134393628969, guid: 13c2c6f04c0fb964ab5292159187d190, type: 3}
+  linePrefab: {fileID: 2289476719108023147, guid: bf1dc5b70093c614cba119bd8828fe9c, type: 3}
   waveformColor: {r: 0, g: 1, b: 0, a: 1}
   waveformBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
   waveformPixelsPerSecond: 0
@@ -7995,10 +7996,10 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1988512197}
   - {fileID: 75585323}
   - {fileID: 28912105}
   - {fileID: 1299986258}
-  - {fileID: 1988512197}
   - {fileID: 335578909}
   m_Father: {fileID: 1172385747}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

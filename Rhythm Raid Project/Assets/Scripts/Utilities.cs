@@ -52,6 +52,11 @@ public class Utilities : MonoBehaviour
         return tex;
     }
 
+    public float GetBeatTime(float bpm)
+    {
+        return 60 / bpm;
+    }
+
     public float PixelsPerSeconds(float time, float pixels)
     {
         return pixels / time;
